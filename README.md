@@ -1,7 +1,15 @@
-# Steps to make it work
+# ratio-calculation-module
 
-## Create a Virtual Environment
-python -m venv <venv-name>
 
-## Install the requirements
-pip install -r requirements.txt
+## Steps to make it work
+
+
+### Create a Virtual Environment
+```python -m venv <venv-name>```
+### Install the requirements
+```pip install -r requirements.txt```
+
+OR
+
+### via shell
+```bash setup.sh```
