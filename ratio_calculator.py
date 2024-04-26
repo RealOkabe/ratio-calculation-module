@@ -1,4 +1,5 @@
 from yfinance_wrapper import YfinanceWrapper
+import yfinance as yf
 
 
 class RatioCalculator:
@@ -9,16 +10,19 @@ class RatioCalculator:
         self.end = end
 
     # Calculate price-to-earnings ratio
-    def calculate_pe_ratio(self) -> float:
-        # data = self.data_wrapper.get_data(self.start, self.end)
-        # Calculate earnings per share here
-        # price_per_share = ????
-        # Calculate price per share here
-        # earnings_per_share = ????
+    def calculate_pe_ratio(self, ticker: str, start: str, end: str) -> float:
+        ticker_data = yf.Ticker(self.ticker, start = self.start, end = self.end)
+        pe_ratio = ticker_data['Close'].iloc[-1] / ticker_data.info['trailingPE']
+        return pe_ratio
 
-        # try:
-        #     return price_per_share / earnings_per_share
-        # except ZeroDivisionError:
-        #     return 0
+    # Get the return on equity
+    def get_return_on_equity(self, ticker: str):
+        ticker_data = yf.Ticker(self.ticker)
+        return ticker_data['returnOnEquity']
 
-        pass
+    # Get the return on assets
+    def get_return_on_assets(self, ticker: str):
+        ticker_data = yf.Ticker(self.ticker)
+        return ticker_data['returnOnAssets']
+
+    
