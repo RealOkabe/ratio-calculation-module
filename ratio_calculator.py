@@ -31,7 +31,7 @@ class RatioCalculator:
         return vwap
 
     # Calculate Relative Strength Index
-    def get_RSI(self, ticker: str, start: str, end: str):
+    def calculate_rsi(self, ticker: str, start: str, end: str):
         ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         ticker_data['price_diff'] = ticker_data['Close'] - ticker_data['Open']
         up_closes = []
@@ -45,4 +45,19 @@ class RatioCalculator:
         avg_down_close = sum(down_closes) / len(down_closes)
         relative_strength = avg_up_close / avg_down_close
         return (100 - (100 / (1 + relative_strength)))
+
+    # Calculate the Average True Range
+    def calculate_atr(self, ticker: str, start: str, end: str):
+        ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
+        ticker_data['ATR'] = 0
+        prev_close = None
+        for i in ticker_data.index:
+            if prev_close is None:
+                ticker_data['ATR'][i] = ticker_data['High'][i] - ticker_data['Low'][i]
+                prev_close = ticker_data['Close'][i]
+                continue
+            ticker_data['ATR'][i] = max(ticker_data['High'][i] - ticker_data['Low'][i], abs(ticker_data['High'][i] - prev_close), abs(ticker_data['Low'][i] - prev_close))
+            prev_close = ticker_data['Close'][i]
+        return ticker_data
+
     
