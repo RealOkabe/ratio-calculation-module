@@ -8,7 +8,7 @@ class RatioCalculator:
         self.data_wrapper = YfinanceWrapper(ticker)
         self.start = start
         self.end = end
-        self.ticker_data:  = yf.Ticker(self.ticker).history(
+        self.ticker_data = yf.Ticker(self.ticker).history(
             start=self.start, end=self.end
         )
 
@@ -78,12 +78,6 @@ class RatioCalculator:
                 )
                 prev_close = self.ticker_data["Close"][i]
                 continue
-
-            ticker_data["ATR"][i] = max(
-                ticker_data["High"][i] - ticker_data["Low"][i],
-                abs(ticker_data["High"][i] - prev_close),
-                abs(ticker_data["Low"][i] - prev_close),
-            )
 
             self.ticker_data["ATR"][i] = max(
                 self.ticker_data["High"][i] - self.ticker_data["Low"][i],
