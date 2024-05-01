@@ -1,4 +1,5 @@
 from ratio_calculator import RatioCalculator
+from datetime import datetime
 
 
 class Engine:
@@ -15,13 +16,15 @@ class Engine:
                     self.selector = None
 
                 if self.selector is None:
-                    self.selector = input("What module would you like to use: ")
+                    self.selector = input(
+                        "What module would you like to use: \n1. Ratio Calculator\n2. Plot Creator\nEnter 1 or 2 >> "
+                    )
                     if self.selector == "quit":
                         break
 
-                if self.selector == "ratio":
+                if self.selector == "1":
                     self.ratio_calculator()
-                elif self.selector == "plot":
+                elif self.selector == "2":
                     self.create_plots()
                 else:
                     print("Invalid module. Please try again.")
@@ -32,6 +35,7 @@ class Engine:
                 print("Use 'quit' to exit.")
 
     def ratio_calculator(self):
+        print("\nRatio Calculator")
         try:
             ticker = input("Enter the ticker: ")
             if ticker == "quit":
@@ -42,6 +46,8 @@ class Engine:
                 raise EOFError
 
             end = input("Enter the end date (yyyy-mm-dd): ")
+            if not end:
+                end = str(datetime.date.today())
             if end == "quit":
                 raise EOFError
 
@@ -53,6 +59,7 @@ class Engine:
             print("Exiting ratio calculator.")
 
     def create_plots(self):
+        print("\nPlot Creator")
         try:
             tickers = input("Enter the list of tickers: ")
             if tickers == "quit":
@@ -66,6 +73,8 @@ class Engine:
             end = input("Enter the end date (yyyy-mm-dd): ")
             if end == "quit":
                 raise EOFError
+            if not end:
+                end = str(datetime.date.today())
 
             print(f"Creating plots for {tickers} from {start} to {end}")
 
