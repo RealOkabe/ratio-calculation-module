@@ -1,6 +1,25 @@
 from datetime import datetime
-from typing import Any, Tuple, Optional
+from typing import Any, Tuple, List, Optional
 
+
+def validate_inputs(*inputs: List[Tuple[str, Any, dict]]) -> list:
+    if not inputs:
+        raise ValueError("No inputs provided.")
+    
+    validated_inputs = list()
+    for current_input in inputs:
+        name, value, argsDict = current_input
+        validated_input = validate_and_sanitize_input(name, value, **argsDict)
+        validated_inputs.append(validated_input)
+
+    return validated_inputs
+
+def validate_and_sanitize_input(name, value, **kwargs):
+    (value, error) = validate_input(value, **kwargs)
+    if error:
+        raise ValueError(f"Input: {name}; ", error)
+
+    return value
 
 def validate_input(value, **kwargs) -> Tuple[Any, Optional[str]]:
     """
@@ -100,7 +119,7 @@ def validate_min_max_date(
         date (str): The date to validate.
         min_date (datetime): The minimum date allowed.
         max_date (datetime): The maximum date allowed.
-        
+
     Returns:
         bool: True if the date is not before 1970-01-01, False otherwise.
 
