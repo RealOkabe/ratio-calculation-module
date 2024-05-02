@@ -118,36 +118,3 @@ class PortfolioManager:
         plt.legend()
         plt.grid(True)
         plt.show()
-
-
-def main():
-    # Input portfolio details
-    # num_stocks = int(input("Enter the number of stocks in your portfolio: "))
-    # for i in range(num_stocks):
-    #     ticker = input(f"Enter ticker symbol for stock {i+1}: ")
-    #     buy_date = input(f"Enter buy date for {ticker} (YYYY-MM-DD): ")
-    #     buy_price = float(input(f"Enter buy price for {ticker}: "))
-    #     quantity = int(input(f"Enter quantity bought for {ticker}: "))
-
-    #     manager = PortfolioManager()
-    #     manager.add_stock(ticker, buy_date, buy_price, quantity)
-
-    manager = PortfolioManager()
-    manager.add_stock("AAPL", "2022-08-02", 200, 5)
-    # Calculate portfolio performance
-    portfolio_analysis = manager.calculate_portfolio_performance()
-
-    # Generate recommendations
-    recommendations = manager.generate_recommendation(portfolio_analysis)
-
-    manager.plot_stock_with_moving_averages()
-
-    # Display portfolio analysis with recommendations
-    print("\nPortfolio Analysis with Recommendations:")
-    df = pd.DataFrame.from_dict(portfolio_analysis["portfolio"], orient="index")
-    df["Recommendation"] = [recommendations[stock] for stock in df.index]
-    print(df)
-
-
-if __name__ == "__main__":
-    main()
