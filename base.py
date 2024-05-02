@@ -1,10 +1,11 @@
 from ratio_calculator import RatioCalculator
 from manager import PortfolioManager
 from datetime import datetime
+from validations import validate_input
 import sys
 
 
-TOTAL_INVALID_ATTEMPTS = 3
+TOTAL_INVALID_ATTEMPTS = 5
 
 
 class Engine:
@@ -107,46 +108,26 @@ class Engine:
             print("Exiting portfolio manager.")
 
     def input(self, prompt, **kwargs):
-        type = kwargs.get("type", "str")
-        optional = kwargs.get("optional", False)
-
         while True:
             if self.invalid_attempts >= TOTAL_INVALID_ATTEMPTS:
                 print("Too many invalid attempts. Exiting the engine.")
                 sys.exit()
 
-            try:
-                value = input(prompt)
-                if value == "quit":
-                    raise EOFError
+            input_value = input(prompt)
 
-                if value == "exit":
-                    self.__exit_engine__()
+            if input_value == "quit":
+                raise EOFError
 
-                if optional and not value:
-                    return None
+            if input_value == "exit":
+                self.__exit_engine__()
 
-                if type == "float":
-                    return float(value)
-                elif type == "int":
-                    return int(value)
-                elif type == "date":
-                    if self.validate_date(value):
-                        return value
-                    else:
-                        raise ValueError("Invalid date format. Please try again.")
-                else:
-                    return value
-            except ValueError:
-                print(f"Invalid {type} format. Please try again.")
-                self.__mark_invalid_attempt__()
+            value, error = validate_input(input_value, **kwargs)
 
-    def validate_date(self, date):
-        try:
-            datetime.strptime(date, "%Y-%m-%d")
-            return True
-        except ValueError:
-            return False
+            if not error:
+                return value
+
+            print(error)
+            self.__mark_invalid_attempt__()
 
     def __mark_invalid_attempt__(self):
         self.invalid_attempts += 1

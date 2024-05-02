@@ -1,19 +1,30 @@
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
 
 
 class PortfolioManager:
     def __init__(self):
         self.portfolio = {}
 
+    def __read_json__(self, file_path):
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        # do rest of the processing
+
     def get_stock_data(self, ticker: str, start_date: str):
         """Fetch historical stock data from Yahoo Finance."""
+        # TODO: try catch required
         stock_data = yf.download(ticker, start=start_date)
         return stock_data
 
     def add_stock(self, ticker, buy_date, buy_price, quantity):
         stock_data = self.get_stock_data(ticker, buy_date)
+        if not stock_data or stock_data.empty:
+            print(f"Stock data not found for {ticker}. Please try again.")
+            return
+
         self.portfolio[ticker] = {
             "buy_price": buy_price,
             "quantity": quantity,
