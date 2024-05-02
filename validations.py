@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import Any, Tuple, List, Optional
+from typing import Any, Tuple, Optional, Dict
 
 
-def validate_inputs(*inputs: List[Tuple[str, Any, dict]]) -> list:
+def validate_inputs(*inputs: Tuple[str, Any, Dict[str, Any]]) -> list:
     if not inputs:
         raise ValueError("No inputs provided.")
-    
+
     validated_inputs = list()
     for current_input in inputs:
         name, value, argsDict = current_input
@@ -14,12 +14,14 @@ def validate_inputs(*inputs: List[Tuple[str, Any, dict]]) -> list:
 
     return validated_inputs
 
+
 def validate_and_sanitize_input(name, value, **kwargs):
     (value, error) = validate_input(value, **kwargs)
     if error:
         raise ValueError(f"Input: {name}; ", error)
 
     return value
+
 
 def validate_input(value, **kwargs) -> Tuple[Any, Optional[str]]:
     """
@@ -110,7 +112,7 @@ def validate_date(date) -> bool:
 def validate_min_max_date(
     date: str,
     min_date: datetime = datetime(1970, 1, 1),
-    max_date: datetime = datetime.now().date(),
+    max_date: datetime = datetime.now(),
 ) -> Tuple[bool, Optional[str]]:
     """
     Validate that the date is not before 1970-01-01 or after max_Date.
@@ -134,11 +136,13 @@ def validate_min_max_date(
         >>> validate_max_date("2022-01-01")
         (False, 'Date cannot be after 2021-01-01. Please try again.')
     """
-
     formatted_date = datetime.strptime(date, "%Y-%m-%d")
     if formatted_date < min_date:
         return (False, "Date cannot be before 1970-01-01. Please try again.")
     if formatted_date > max_date:
-        return (False, f"Date cannot be after {datetime.strptime(max_date, "%Y-%m-%d")}. Please try again.")
+        return (
+            False,
+            f"Date cannot be after {max_date.strftime('%Y-%m-%d')}. Please try again.",
+        )
 
     return (True, None)

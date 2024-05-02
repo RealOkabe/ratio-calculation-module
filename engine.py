@@ -116,7 +116,7 @@ class Engine:
             self.selector = None
             print("Exiting portfolio manager.")
 
-    def input(self, prompt, **kwargs: Dict[str, Any]):
+    def input(self, prompt, **kwargs):
         """
         Take input from the user. Validate the input. Exit the engine if too many invalid attempts.
 
