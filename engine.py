@@ -1,18 +1,26 @@
+# External Imports
+from datetime import datetime
+from typing import Dict, Any
+import sys
+
+# Internal Imports
 from ratio_calculator import RatioCalculator
 from manager import PortfolioManager
-from datetime import datetime
 from validations import validate_input
-import sys
 
 
 TOTAL_INVALID_ATTEMPTS = 5
 
 
 class Engine:
+    """The Base Engine."""
+
     def __init__(self):
         self.invalid_attempts = 0
 
     def run(self):
+        """Run the engine."""
+
         print("Welcome to the Stock Analysis Engine.")
         print("Type 'exit' or Ctrl+C at any point of time to exit.")
         print(
@@ -53,14 +61,13 @@ class Engine:
                 print("Use 'quit' to exit.")
 
     def ratio_calculator(self):
+        """Run the ratio calculator module."""
+
         print("\nRatio Calculator")
         try:
             ticker = self.input("Enter the ticker: ")
 
             start = self.input("Enter the start date (yyyy-mm-dd): ", type="date")
-            if not self.validate_date(start):
-                print("Invalid date format. Please try again.")
-                return
 
             end = self.input(
                 "Enter the end date (yyyy-mm-dd): ", optional=True, type="date"
@@ -76,6 +83,8 @@ class Engine:
             print("Exiting ratio calculator.")
 
     def run_portfolio_manager(self):
+        """Run the portfolio manager module."""
+
         print("\nPortfolio Manager")
         try:
             manager = PortfolioManager()
@@ -107,7 +116,19 @@ class Engine:
             self.selector = None
             print("Exiting portfolio manager.")
 
-    def input(self, prompt, **kwargs):
+    def input(self, prompt, **kwargs: Dict[str, Any]):
+        """
+        Take input from the user. Validate the input. Exit the engine if too many invalid attempts.
+
+        Args:
+            prompt (str): The prompt to display to the user.
+            **kwargs: Keyword arguments to pass to the validate_input function.
+            optional and type are two keyword arguments that can be passed to validate_input.
+
+        Returns:
+            Any: The validated input.
+        """
+
         while True:
             if self.invalid_attempts >= TOTAL_INVALID_ATTEMPTS:
                 print("Too many invalid attempts. Exiting the engine.")
@@ -130,6 +151,8 @@ class Engine:
             self.__mark_invalid_attempt__()
 
     def __mark_invalid_attempt__(self):
+        """Mark an invalid attempt. Exits the engine if too many invalid attempts."""
+
         self.invalid_attempts += 1
         print(
             "Number of valid attempts left: ",
@@ -141,6 +164,8 @@ class Engine:
             self.__exit_engine__()
 
     def __exit_engine__(self):
+        """Exit the engine."""
+
         print("Exiting the engine. See you later.")
         sys.exit()
 

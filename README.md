@@ -5,8 +5,8 @@
 This is a simple application that has 3 modules that can be utilised. The modules are:
 
 1. Ratio Calculation
-2. Visual Representation of the Ratio Calculation
-3. ----- To be added -----.
+2. Stock Portfolio Analysis
+3. Engine to run the modules
 
 ## Requirements
 
