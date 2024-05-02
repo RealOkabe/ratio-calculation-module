@@ -77,6 +77,7 @@ class Engine:
     def run_portfolio_manager(self):
         print("\nPortfolio Manager")
         try:
+            manager = PortfolioManager()
             num_stocks = self.input(
                 "Enter the number of stocks in your portfolio: ", type="int"
             )
@@ -90,7 +91,6 @@ class Engine:
                     f"Enter quantity bought for {ticker}: ", type="int"
                 )
 
-                manager = PortfolioManager()
                 manager.add_stock(ticker, buy_date, buy_price, quantity)
 
             # Calculate portfolio performance
