@@ -3,6 +3,15 @@ from typing import Any, Tuple, Optional, Dict
 
 
 def validate_inputs(*inputs: Tuple[str, Any, Dict[str, Any]]) -> list:
+    """
+    Validate and sanitize a list inputs.
+
+    Args:
+        *inputs: A variable number of tuples containing the input name, value, and arguments.
+
+    Returns:
+        list: A list of validated inputs.
+    """
     if not inputs:
         raise ValueError("No inputs provided.")
 
@@ -15,7 +24,20 @@ def validate_inputs(*inputs: Tuple[str, Any, Dict[str, Any]]) -> list:
     return validated_inputs
 
 
-def validate_and_sanitize_input(name, value, **kwargs):
+def validate_and_sanitize_input(name, value, **kwargs) -> Any:
+    """
+    Validate and sanitize the input value.
+
+    Args:
+        name (str): The name of the input.
+        value (Any): The input value to validate.
+        **kwargs: Keyword arguments to pass to the validate_input function.
+        optional and type are two keyword arguments that can be passed to validate_input.
+
+    Returns:
+        Any: The validated and sanitized input value.
+
+    """
     (value, error) = validate_input(value, **kwargs)
     if error:
         raise ValueError(f"Input: {name}; ", error)

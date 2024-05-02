@@ -1,5 +1,4 @@
-from yfinance_wrapper import YfinanceWrapper
-import yfinance as yf
+from yfinance_wrapper import YfinanceWrapper, TickerDataError
 
 
 class RatioCalculator:
@@ -8,9 +7,11 @@ class RatioCalculator:
         self.data_wrapper = YfinanceWrapper()
         self.start = start
         self.end = end
-        self.ticker_data = self.data_wrapper.history(ticker,
-            self.start, self.end
-        )
+        self.ticker_data = self.data_wrapper.history(ticker, self.start, self.end)
+        if self.ticker_data is None or self.ticker_data.empty:
+            raise TickerDataError(
+                f"Stock data not found for {ticker}. Please try again."
+            )
 
     # Calculate price-to-earnings ratio
     def calculate_pe_ratio(self):

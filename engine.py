@@ -7,6 +7,7 @@ import sys
 from ratio_calculator import RatioCalculator
 from manager import PortfolioManager
 from validations import validate_input
+from yfinance_wrapper import TickerDataError
 
 
 TOTAL_INVALID_ATTEMPTS = 5
@@ -77,6 +78,8 @@ class Engine:
 
             ratio_calculator = RatioCalculator(ticker, start, end)
             print(f"Price-to-earnings ratio: {ratio_calculator.calculate_pe_ratio()}")
+        except TickerDataError as e:
+            print(f"Error occurred: {e}")
         except EOFError:
             self.selector = None
             print("Exiting ratio calculator.")
@@ -111,6 +114,7 @@ class Engine:
             # Display portfolio analysis with recommendations
             print("\nPortfolio Analysis with Recommendations:")
             print(recommendations)
+
         except EOFError:
             self.selector = None
             print("Exiting portfolio manager.")
