@@ -5,11 +5,11 @@ import yfinance as yf
 class RatioCalculator:
     def __init__(self, ticker: str, start: str, end: str) -> None:
         self.ticker = ticker
-        self.data_wrapper = YfinanceWrapper(ticker)
+        self.data_wrapper = YfinanceWrapper()
         self.start = start
         self.end = end
-        self.ticker_data = yf.Ticker(self.ticker).history(
-            start=self.start, end=self.end
+        self.ticker_data = self.data_wrapper.history(ticker,
+            self.start, self.end
         )
 
     # Calculate price-to-earnings ratio
@@ -86,4 +86,3 @@ class RatioCalculator:
             )
             prev_close = self.ticker_data["Close"][i]
         return self.ticker_data
-

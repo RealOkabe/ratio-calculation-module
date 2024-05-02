@@ -73,10 +73,9 @@ class Engine:
                 "Enter the end date (yyyy-mm-dd): ", optional=True, type="date"
             )
             if not end:
-                end = str(datetime.date.today())
+                end = str(datetime.now().date())
 
             ratio_calculator = RatioCalculator(ticker, start, end)
-
             print(f"Price-to-earnings ratio: {ratio_calculator.calculate_pe_ratio()}")
         except EOFError:
             self.selector = None
