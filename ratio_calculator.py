@@ -13,7 +13,7 @@ class RatioCalculator:
         )
 
     # Calculate price-to-earnings ratio
-    def calculate_pe_ratio(self, ticker: str, start: str, end: str):
+    def calculate_pe_ratio(self):
         avg_price = (
             self.ticker_data["Open"]
             + self.ticker_data["High"]
@@ -26,7 +26,7 @@ class RatioCalculator:
         return self.ticker_data
 
     # Calculate Price Change percentage
-    def calculate_pc_percent(self, ticker: str, start: str, end: str):
+    def calculate_pc_percent(self):
         # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         book_price = self.ticker_data["Close"] - self.ticker_data["Open"]
         self.ticker_data["Price Change Percentage"] = (
@@ -35,7 +35,7 @@ class RatioCalculator:
         return self.ticker_data
 
     # Calculate volume-weighted average price
-    def calculate_vwap(self, ticker: str, start: str, end: str):
+    def calculate_vwap(self):
         # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         avg_price = (
             self.ticker_data["Open"]
@@ -49,7 +49,7 @@ class RatioCalculator:
         return vwap
 
     # Calculate Relative Strength Index
-    def calculate_rsi(self, ticker: str, start: str, end: str):
+    def calculate_rsi(self):
         # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         self.ticker_data["price_diff"] = (
             self.ticker_data["Close"] - self.ticker_data["Open"]
@@ -67,7 +67,7 @@ class RatioCalculator:
         return 100 - (100 / (1 + relative_strength))
 
     # Calculate the Average True Range
-    def calculate_atr(self, ticker: str, start: str, end: str):
+    def calculate_atr(self):
         # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         self.ticker_data["ATR"] = 0
         prev_close = None
@@ -86,3 +86,4 @@ class RatioCalculator:
             )
             prev_close = self.ticker_data["Close"][i]
         return self.ticker_data
+
