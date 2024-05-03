@@ -148,7 +148,10 @@ class Engine:
         print("You can either load a portfolio from a file or enter stocks manually.")
         print("Enter 'quit' to exit the module.")
         try:
-            print("Plots will be saved under /portfolio_analysis folder.")
+            print("\nPlots will be saved under /portfolio_analysis folder.")
+            print(
+                "WARNING: If the folder exists, it will be deleted and recreated. Please save those files if you require there somewhere\n"
+            )
 
             save_report = self.input(
                 "Would you also like to save the portfolio analysis report? (yes/no): ",

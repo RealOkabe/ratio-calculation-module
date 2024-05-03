@@ -2,6 +2,18 @@ from yfinance_wrapper import YfinanceWrapper, TickerDataError
 
 
 class RatioCalculator:
+    """
+    The Ratio Calculator class.
+
+    Functions:
+        __init__: Initialize the RatioCalculator class.
+        calculate_pe_ratio: Calculate the price-to-earnings ratio.
+        calculate_pc_percent: Calculate the price change percentage.
+        calculate_vwap: Calculate the volume-weighted average price.
+        calculate_rsi: Calculate the Relative Strength Index.
+        calculate_atr: Calculate the Average True Range.
+    """
+
     def __init__(self, ticker: str, start: str, end: str) -> None:
         self.ticker = ticker
         self.data_wrapper = YfinanceWrapper()
@@ -15,6 +27,16 @@ class RatioCalculator:
 
     # Calculate price-to-earnings ratio
     def calculate_pe_ratio(self):
+        """
+        Calculate the price-to-earnings ratio.
+
+        Returns:
+            pd.DataFrame: The stock data with the PE Ratio column.
+
+        Examples:
+            >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
+            >>> print(ratio_calculator.calculate_pe_ratio())
+        """
         avg_price = (
             self.ticker_data["Open"]
             + self.ticker_data["High"]
@@ -28,6 +50,16 @@ class RatioCalculator:
 
     # Calculate Price Change percentage
     def calculate_pc_percent(self):
+        """
+        Calculate the price change percentage.
+
+        Returns:
+            pd.DataFrame: The stock data with the Price Change Percentage column.
+
+        Examples:
+            >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
+            >>> print(ratio_calculator.calculate_pc_percent())
+        """
         book_price = self.ticker_data["Close"] - self.ticker_data["Open"]
         self.ticker_data["Price Change Percentage"] = (
             book_price / self.ticker_data["Open"]
@@ -36,6 +68,16 @@ class RatioCalculator:
 
     # Calculate volume-weighted average price
     def calculate_vwap(self):
+        """
+        Calculate the volume-weighted average price.
+
+        Returns:
+            float: The volume-weighted average price.
+
+        Examples:
+            >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
+            >>> print(ratio_calculator.calculate_vwap())
+        """
         avg_price = (
             self.ticker_data["Open"]
             + self.ticker_data["High"]
@@ -49,6 +91,16 @@ class RatioCalculator:
 
     # Calculate Relative Strength Index
     def calculate_rsi(self):
+        """
+        Calculate the Relative Strength Index.
+
+        Returns:
+            float: The Relative Strength Index.
+
+        Examples:
+            >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
+            >>> print(ratio_calculator.calculate_rsi())
+        """
         self.ticker_data["price_diff"] = (
             self.ticker_data["Close"] - self.ticker_data["Open"]
         )
@@ -66,6 +118,16 @@ class RatioCalculator:
 
     # Calculate the Average True Range
     def calculate_atr(self):
+        """
+        Calculate the Average True Range.
+
+        Returns:
+            pd.DataFrame: The stock data with the ATR column.
+
+        Examples:
+            >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
+            >>> print(ratio_calculator.calculate_atr())
+        """
         self.ticker_data["ATR"] = 0
         prev_close = None
         for i in self.ticker_data.index:
