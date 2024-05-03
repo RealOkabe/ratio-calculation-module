@@ -6,13 +6,13 @@
 2. [Requirements](#requirements)
 3. [Team](#team)
 4. [Installation](#installation)
-    - [Manual Installation](#manual-installation)
-    - [Installation using Shell Script](#installation-using-shell-script)
+   - [Manual Installation](#manual-installation)
+   - [Installation using Shell Script](#installation-using-shell-script)
 5. [Run the Application](#run-the-application)
 6. [Modules](#modules)
-    - [Ratio Calculation](#ratio-calculation)
-    - [Portfolio Manager](#portfolio-manager)
-    - [Engine](#engine)
+   - [Ratio Calculation](#ratio-calculation)
+   - [Portfolio Manager](#portfolio-manager)
+   - [Engine](#engine)
 
 ## Introduction
 
@@ -60,12 +60,11 @@ If you want to install the application using the shell script, just run the foll
 
 To run the application, run the following command:
 
-    python base.py
+    python engine.py
 
 Or to run the application with the shell script, run the following command:
 
     bash run.sh
-
 
 ## Modules
 
@@ -76,6 +75,33 @@ The ratio calculation module allows users to calculate various metrics about a s
 ### Portfolio Manager
 
 The portfolio manager module enables users to manage their stock portfolios. The module takes the ticker symbol, purchase date, price and quantity bought during initialization for each stock in the portfolio and calculates the portfolio's performance and generates reccomendations based on the analysis.
+
+You can add stocks to the portfolio by providing path to a JSON file with the following format(Refer data.json for example):
+
+```json
+{
+  "portfolio": {
+    "AAPL": {
+      "buy_date": "2020-01-01",
+      "buy_price": 1600,
+      "quantity": 10
+    },
+    "GOOGL": {
+      "buy_date": "2020-01-01",
+      "buy_price": 10600,
+      "quantity": 10
+    }
+  }
+}
+```
+
+Or call add_stock method with the following parameters:
+
+```python
+portfolio_manager = PortfolioManager()
+portfolio_manager.add_stock("AAPL", "2020-01-01", 1600, 10)
+portfolio_manager.add_stock("GOOGL", "2020-01-01", 10600, 10)
+```
 
 ### Engine
 

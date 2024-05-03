@@ -4,8 +4,19 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 
 import matplotlib.pyplot as plt
-import yfinance as yf
 import pandas as pd
+from datetime import datetime
+
+from yfinance_wrapper import YfinanceWrapper, TickerDataError
+from validations import validate_inputs
+
+
+class PorfolioJSONError(Exception):
+    """Custom exception for Portfolio JSON errors."""
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
 
 
 class PortfolioManager:
@@ -34,9 +45,14 @@ class PortfolioManager:
         }
         """
         self.portfolio = {}
+        self.yf_wrapper = YfinanceWrapper()
         if path:
             self.path = path
             self.__get_json_data()
+            if self.portfolio is None or not self.portfolio:
+                raise PorfolioJSONError(
+                    "Could not load portfolio data. Check JSON file."
+                )
 
     def __read_json__(self, file_path):
         """Read JSON data from a file."""
@@ -48,9 +64,9 @@ class PortfolioManager:
         Raises:
             ValueError: If the JSON data is not in the correct format.
         """
-        data = self.__read_json__(self.path)
 
         try:
+            data = self.__read_json__(self.path)
             if "portfolio" not in data:
                 raise ValueError("Invalid JSON format. 'portfolio' key not found.")
 
@@ -67,10 +83,18 @@ class PortfolioManager:
                 buy_date = details["buy_date"]
                 buy_price = details["buy_price"]
                 quantity = details["quantity"]
+                validate_inputs(
+                    ("ticker", ticker, {"type": "str"}),
+                    ("buy_date", buy_date, {"type": "date"}),
+                    ("buy_price", buy_price, {"type": "float"}),
+                    ("quantity", quantity, {"type": "int"}),
+                )
                 self.add_stock(ticker, buy_date, buy_price, quantity)
 
             print("Portfolio loaded successfully.")
 
+        except FileNotFoundError:
+            print(f"File not found: {self.path}")
         except ValueError as value_error:
             print(value_error)
 
@@ -149,7 +173,13 @@ class PortfolioManager:
         Returns:
             DataFrame: Stock data.
         """
-        stock_data = yf.download(ticker, start=start_date)
+        stock_data = self.yf_wrapper.get_data(
+            ticker, start_date, datetime.now().date().strftime("%Y-%m-%d")
+        )
+        if stock_data is None or stock_data.empty:
+            raise TickerDataError(
+                f"Stock data not found for {ticker}. Please try again."
+            )
         return stock_data
 
     def add_stock(self, ticker, buy_date, buy_price, quantity):

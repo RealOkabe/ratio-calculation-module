@@ -11,6 +11,18 @@ def validate_inputs(*inputs: Tuple[str, Any, Dict[str, Any]]) -> list:
 
     Returns:
         list: A list of validated inputs.
+
+    Raises:
+        ValueError: If no inputs are provided.
+
+    Examples:
+        >>> validate_inputs(
+            ("age", "10", {"type": "int"}),
+            ("name", "John", {"type": "str"}),
+            ("price", "10.5", {"type": "float"}),
+            ("date", "2021-01-01", {"type": "date"})
+        )
+        [10, 'John', 10.5, '2021-01-01']
     """
     if not inputs:
         raise ValueError("No inputs provided.")
@@ -37,6 +49,31 @@ def validate_and_sanitize_input(name, value, **kwargs) -> Any:
     Returns:
         Any: The validated and sanitized input value.
 
+    Raises:
+        ValueError: If the input value is invalid.
+
+    Examples:
+        # Integer validation
+        >>> validate_and_sanitize_input("age", "10", type="int")
+        10
+        >>> validate_and_sanitize_input("age", "", type="int")
+        ValueError: Input: age;  Invalid int format. Please try again.
+
+        # String validation
+        >>> validate_and_sanitize_input("name", "John", type="str")
+        'John'
+
+        # Float validation
+        >>> validate_and_sanitize_input("price", "10.5", type="float")
+        10.5
+        >>> validate_and_sanitize_input("price", "10", type="float")
+        10.0
+
+        # Date validation
+        >>> validate_and_sanitize_input("date", "2021-01-01", type="date")
+        '2021-01-01'
+        >>> validate_and_sanitize_input("date", "", type="date")
+        ValueError: Input: date;  Invalid date format. Please try again.
     """
     (value, error) = validate_input(value, **kwargs)
     if error:

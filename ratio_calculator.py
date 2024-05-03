@@ -28,7 +28,6 @@ class RatioCalculator:
 
     # Calculate Price Change percentage
     def calculate_pc_percent(self):
-        # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         book_price = self.ticker_data["Close"] - self.ticker_data["Open"]
         self.ticker_data["Price Change Percentage"] = (
             book_price / self.ticker_data["Open"]
@@ -37,7 +36,6 @@ class RatioCalculator:
 
     # Calculate volume-weighted average price
     def calculate_vwap(self):
-        # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         avg_price = (
             self.ticker_data["Open"]
             + self.ticker_data["High"]
@@ -51,7 +49,6 @@ class RatioCalculator:
 
     # Calculate Relative Strength Index
     def calculate_rsi(self):
-        # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         self.ticker_data["price_diff"] = (
             self.ticker_data["Close"] - self.ticker_data["Open"]
         )
@@ -69,7 +66,6 @@ class RatioCalculator:
 
     # Calculate the Average True Range
     def calculate_atr(self):
-        # self.ticker_data = yf.Ticker(self.ticker).history(start = self.start, end = self.end)
         self.ticker_data["ATR"] = 0
         prev_close = None
         for i in self.ticker_data.index:
