@@ -24,7 +24,6 @@ class Engine:
         input: Take input from the user. Validate the input. Exit the engine if too many invalid attempts.
         __mark_invalid_attempt__: Mark an invalid attempt. Exits the engine if too many invalid attempts.
         __exit_engine__: Exit the engine.
-
     """
 
     def __init__(self) -> None:
@@ -35,8 +34,12 @@ class Engine:
         Run the engine.
         The user can select a module to run.
         """
-
-        print("Welcome to the Stock Analysis Engine.")
+        print("\n")
+        print("*****************************************")
+        print("Welcome to the STOCK ANALYSIS ENGINE")
+        print("*****************************************")
+        print("This engine allows you to analyze stocks and portfolios.")
+        print("\nInstructions:")
         print("Type 'exit' or Ctrl+C at any point of time to exit.")
         print(
             "Type 'quit' to exit the current module or exit engine in module selection.\n"
@@ -112,7 +115,7 @@ class Engine:
         The user can either load a portfolio from a file or enter stocks manually.
         """
 
-        print("\nPortfolio Manager")
+        print("\n***** PORTFOLIO MANAGER *****")
         print("You can either load a portfolio from a file or enter stocks manually.")
         print("Enter 'quit' to exit the module.")
         try:
@@ -123,10 +126,12 @@ class Engine:
 
             save_report = self.input(
                 "Would you also like to save the portfolio analysis report? (yes/no): ",
-                type="str",
+                type="acceptance",
             )
 
-            path = self.input("Enter the path to the portfolio JSON file(Optional): ")
+            path = self.input(
+                "Enter the path to the portfolio JSON file\n(leave empty to enter stocks manually): "
+            )
 
             if path:
                 manager = PortfolioManager(path)
@@ -158,10 +163,19 @@ class Engine:
             # Display portfolio analysis with recommendations
             print("\nPortfolio Analysis with Recommendations:")
             print(recommendations)
+            print("\n")
 
-            if save_report.lower() == "yes":
+            if save_report:
                 manager.give_report()
-                print("Reports are saved under /portfolio_analysis folder.")
+                print("--fyi reports are saved under /portfolio_analysis folder.")
+
+            new_analysis = self.input(
+                "\nWould you like to analyze another portfolio? (yes/no): ",
+                type="acceptance",
+            )
+
+            if not new_analysis:
+                self.selector = None
 
         except (PorfolioJSONError, TickerDataError) as e:
             print(f"Error occurred: {e}")
