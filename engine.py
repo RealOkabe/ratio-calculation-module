@@ -126,7 +126,10 @@ class Engine:
                     case 5:
                         return_value = ratio_calculator.calculate_atr()
                     case 6:
-                        return_value = ratio_calculator.calculate_all()
+                        temp = ratio_calculator.calculate_all()
+                        for key, value in temp.items():
+                            print(f"{key}: ")
+                            print(value)
                     case _:
                         print("Please enter a valid value or enter quit/exit\n")
                 if return_value is not None:
