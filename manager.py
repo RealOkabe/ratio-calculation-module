@@ -1,6 +1,7 @@
 import json as j
 import os
 from pathlib import Path
+import shutil
 from typing import Optional, Dict, Any, List
 
 import matplotlib.pyplot as plt
@@ -20,7 +21,11 @@ class PorfolioJSONError(Exception):
 
 
 class PortfolioManager:
-    def __init__(self, path: Optional[str] = None):
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        out_path: Path = Path("portfolio_analysis"),
+    ):
         """Initialize the Portfolio Manager.
         Args:
             path (str, optional): Path to the JSON file containing the portfolio data. Defaults to None.
@@ -46,6 +51,17 @@ class PortfolioManager:
         """
         self.portfolio = {}
         self.yf_wrapper = YfinanceWrapper()
+
+        self.out_path = out_path
+        # Delete the existing directory and create a new one
+        if os.path.exists(self.out_path):
+            shutil.rmtree(self.out_path, ignore_errors=True)
+
+        os.makedirs(self.out_path, exist_ok=True)
+        # check if out_path is a valid path and not a file
+        if not self.out_path.is_dir():
+            raise ValueError("Invalid output path. Please provide a directory path.")
+
         if path:
             self.path = path
             self.__get_json_data()
@@ -100,7 +116,6 @@ class PortfolioManager:
 
     def give_report(
         self,
-        out_path: Path = Path("portfolio_analysis"),
         report_name: str = "analysis",
     ):
         """
@@ -112,12 +127,6 @@ class PortfolioManager:
             ValueError: If the output path is not a valid directory.
             ValueError: If the portfolio performance or recommendations are not calculated.
         """
-
-        # check if out_path is a valid path and not a file
-        if not out_path.is_dir():
-            raise ValueError("Invalid output path. Please provide a directory path.")
-
-        os.makedirs(out_path, exist_ok=True)
 
         try:
             if not self.portfolio_performance or not self.recommendations:
@@ -137,7 +146,7 @@ class PortfolioManager:
             # Save stock data to a CSV file
             stock_data = details["stock_data"]
             stock_data.to_csv(
-                f"{out_path}/{stock}.csv", index=False, header=True, sep=","
+                f"{self.out_path}/{stock}.csv", index=False, header=True, sep=","
             )
             averages = {
                 "Open_avg": stock_data["Open"].mean(),
@@ -154,7 +163,7 @@ class PortfolioManager:
             details.update(averages)
             details.pop("stock_data", None)
 
-        self.__write_json__(file_path=f"{out_path}/{report_name}.json", data=data)
+        self.__write_json__(file_path=f"{self.out_path}/{report_name}.json", data=data)
 
     def __write_json__(self, file_path, data):
         """Write JSON data to a file.
@@ -314,7 +323,10 @@ class PortfolioManager:
         plt.ylabel("Price")
         plt.legend()
         plt.grid(True)
-        plt.show()
+
+        filename = f"{ticker}_moving_averages_plot.png"
+        plt.savefig(os.path.join(self.out_path, filename))
+        plt.close()
 
 
 def main():
