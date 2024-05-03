@@ -128,20 +128,29 @@ class RatioCalculator:
             >>> ratio_calculator = RatioCalculator("AAPL", "2021-01-01", "2021-12-31")
             >>> print(ratio_calculator.calculate_atr())
         """
-        self.ticker_data["ATR"] = 0
+        self.ticker_data["ATR"] = 0.0
         prev_close = None
         for i in self.ticker_data.index:
             if prev_close is None:
-                self.ticker_data["ATR"][i] = (
+                self.ticker_data.loc[i, 'ATR'] = (
                     self.ticker_data["High"][i] - self.ticker_data["Low"][i]
                 )
                 prev_close = self.ticker_data["Close"][i]
                 continue
 
-            self.ticker_data["ATR"][i] = max(
+            self.ticker_data.loc[i, 'ATR'] = max(
                 self.ticker_data["High"][i] - self.ticker_data["Low"][i],
                 abs(self.ticker_data["High"][i] - prev_close),
                 abs(self.ticker_data["Low"][i] - prev_close),
             )
             prev_close = self.ticker_data["Close"][i]
         return self.ticker_data
+
+    # Calculate Everything
+    def calculate_all(self):
+        self.calculate_pe_ratio()
+        self.calculate_pc_percent()
+        self.calculate_atr()
+        vwap = self.calculate_vwap()
+        rsi = self.calculate_rsi()
+        return {"df": self.ticker_data, "vwap": vwap, "rsi": rsi}
