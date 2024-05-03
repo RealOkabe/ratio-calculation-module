@@ -138,6 +138,8 @@ def validate_input(value, **kwargs) -> Tuple[Any, Optional[str]]:
                 return (value, None)
             else:
                 return (None, "Invalid date format. Please try again.")
+        elif type == "acceptance":
+            return (validate_input_acceptance(value), None)
         else:
             return (value, None)
     except ValueError:
@@ -205,3 +207,16 @@ def validate_min_max_date(
         )
 
     return (True, None)
+
+
+def validate_input_acceptance(ip: str) -> bool:
+    """
+    Validate the user input for acceptance.
+    Args:
+        ip (str): The user input to validate.
+    Returns:
+        bool: True if the user input is accepted, False otherwise.
+    """
+    if ip.lower() == "no" or ip.lower() == "n":
+        return False
+    return True
