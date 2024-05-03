@@ -71,11 +71,11 @@ Or to run the application with the shell script, run the following command:
 
 ### Ratio Calculation
 
-The ratio calculation module allows users to calculate the price-to-earnings ratio for a given stock. Users are prompted to input the ticker symbol, start date, and end date. The application then utilizes the provided information to calculate the price-to-earnings ratio.
+The ratio calculation module allows users to calculate various metrics about a stock including the price-to-earnings ratio, price change percentage, volume-weighted average price, relative strength index and the average true range. The module takes a ticker symbol, start and end dates during initialization and uses them to perform the calculations.
 
 ### Portfolio Manager
 
-The portfolio manager module enables users to manage their stock portfolios. Users can input details such as ticker symbol, buy date, buy price, and quantity bought for each stock in their portfolio. The application calculates the portfolio's performance and generates recommendations based on the analysis.
+The portfolio manager module enables users to manage their stock portfolios. The module takes the ticker symbol, purchase date, price and quantity bought during initialization for each stock in the portfolio and calculates the portfolio's performance and generates reccomendations based on the analysis.
 
 ### Engine
 
