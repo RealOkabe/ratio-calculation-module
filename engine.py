@@ -1,6 +1,6 @@
 # External Imports
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 import sys
 
 # Internal Imports
@@ -71,7 +71,7 @@ class Engine:
                     self.selector = None
 
             except EOFError:
-                print("Use 'quit' to exit.")
+                print("Use 'exit' to exit.")
             except KeyboardInterrupt:
                 self.__exit_engine__()
             # Any other exceptions will be caught here.
@@ -116,6 +116,13 @@ class Engine:
         print("You can either load a portfolio from a file or enter stocks manually.")
         print("Enter 'quit' to exit the module.")
         try:
+            print("Plots will be saved under /portfolio_analysis folder.")
+
+            save_report = self.input(
+                "Would you also like to save the portfolio analysis report? (yes/no): ",
+                type="str",
+            )
+
             path = self.input("Enter the path to the portfolio JSON file(Optional): ")
 
             if path:
@@ -148,6 +155,10 @@ class Engine:
             # Display portfolio analysis with recommendations
             print("\nPortfolio Analysis with Recommendations:")
             print(recommendations)
+
+            if save_report.lower() == "yes":
+                manager.give_report()
+                print("Reports are saved under /portfolio_analysis folder.")
 
         except (PorfolioJSONError, TickerDataError) as e:
             print(f"Error occurred: {e}")
