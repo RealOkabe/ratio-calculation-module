@@ -1,37 +1,177 @@
+import json as j
+import os
+from pathlib import Path
+from typing import Optional, Dict, Any, List
+
+import matplotlib.pyplot as plt
 import yfinance as yf
 import pandas as pd
-import matplotlib.pyplot as plt
-import json
 
 
 class PortfolioManager:
-    def __init__(self):
+    def __init__(self, path: Optional[str] = None):
+        """Initialize the Portfolio Manager.
+        Args:
+            path (str, optional): Path to the JSON file containing the portfolio data. Defaults to None.
+        Raises:
+            ValueError: If the JSON data is not in the correct format.
+
+        Example JSON format:
+        ```json
+        {
+            "portfolio": {
+                "AAPL": {
+                    "buy_date": "2022-08-02",
+                    "buy_price": 200,
+                    "quantity": 5
+                },
+                "GOOGL": {
+                    "buy_date": "2022-08-02",
+                    "buy_price": 2000,
+                    "quantity": 2
+                }
+            }
+        }
+        """
         self.portfolio = {}
+        if path:
+            self.path = path
+            self.__get_json_data()
 
     def __read_json__(self, file_path):
+        """Read JSON data from a file."""
         with open(file_path, "r") as file:
-            data = json.load(file)
-        # do rest of the processing
+            return j.load(file)
+
+    def __get_json_data(self):
+        """Get the JSON data from the file.
+        Raises:
+            ValueError: If the JSON data is not in the correct format.
+        """
+        data = self.__read_json__(self.path)
+
+        try:
+            if "portfolio" not in data:
+                raise ValueError("Invalid JSON format. 'portfolio' key not found.")
+
+            if not data["portfolio"]:
+                raise ValueError("Portfolio is empty.")
+
+            if not isinstance(data["portfolio"], dict):
+                raise ValueError(
+                    "Invalid JSON format. 'portfolio' should be a k/v pair. Check Documentation."
+                )
+
+            for stock, details in data["portfolio"].items():
+                ticker = stock
+                buy_date = details["buy_date"]
+                buy_price = details["buy_price"]
+                quantity = details["quantity"]
+                self.add_stock(ticker, buy_date, buy_price, quantity)
+
+            print("Portfolio loaded successfully.")
+
+        except ValueError as value_error:
+            print(value_error)
+
+    def give_report(
+        self,
+        out_path: Path = Path("portfolio_analysis"),
+        report_name: str = "analysis",
+    ):
+        """
+        Generate a report for the portfolio and recommendations.
+        Args:
+            out_path (Path, optional): Path to save the report. Defaults to Path("portfolio_analysis").
+            report_name (str, optional): Name of the report. Defaults to "analysis".
+        Raises:
+            ValueError: If the output path is not a valid directory.
+            ValueError: If the portfolio performance or recommendations are not calculated.
+        """
+
+        # check if out_path is a valid path and not a file
+        if not out_path.is_dir():
+            raise ValueError("Invalid output path. Please provide a directory path.")
+
+        os.makedirs(out_path, exist_ok=True)
+
+        try:
+            if not self.portfolio_performance or not self.recommendations:
+                raise ValueError(
+                    "Portfolio performance or recommendations not calculated."
+                )
+        except ValueError as value_error:
+            print(value_error)
+            return
+
+        data = {
+            "portfolio": self.portfolio_performance["portfolio"],
+            "recommendations": self.recommendations,
+        }
+
+        for stock, details in data["portfolio"].items():
+            # Save stock data to a CSV file
+            stock_data = details["stock_data"]
+            stock_data.to_csv(
+                f"{out_path}/{stock}.csv", index=False, header=True, sep=","
+            )
+            averages = {
+                "Open_avg": stock_data["Open"].mean(),
+                "High_avg": stock_data["High"].mean(),
+                "Low_avg": stock_data["Low"].mean(),
+                "Close_avg": stock_data["Close"].mean(),
+                "Adj_Close_avg": stock_data["Adj Close"].mean(),
+                "Volume_avg": stock_data["Volume"].mean(),
+                "10-day_SMA_avg": stock_data["10-day SMA"].mean(),
+                "50-day_SMA_avg": stock_data["50-day SMA"].mean(),
+            }
+
+            # Add averages to details dictionary
+            details.update(averages)
+            details.pop("stock_data", None)
+
+        self.__write_json__(file_path=f"{out_path}/{report_name}.json", data=data)
+
+    def __write_json__(self, file_path, data):
+        """Write JSON data to a file.
+        Args:
+            file_path (str): Path to the file to write the JSON data to.
+            data (dict): The data to write to the file.
+        """
+        with open(file_path, "w") as file:
+            j.dump(data, file, indent=4)
 
     def get_stock_data(self, ticker: str, start_date: str):
-        """Fetch historical stock data from Yahoo Finance."""
-        # TODO: try catch required
+        """Fetch historical stock data from Yahoo Finance.
+        Args:
+            ticker (str): Stock ticker symbol.
+            start_date (str): Start date for fetching historical data.
+        Returns:
+            DataFrame: Stock data.
+        """
         stock_data = yf.download(ticker, start=start_date)
         return stock_data
 
     def add_stock(self, ticker, buy_date, buy_price, quantity):
+        """Add a stock to the portfolio.
+        Args:
+            ticker (str): Stock ticker symbol.
+            buy_date (str): Date the stock was bought (YYYY-MM-DD).
+            buy_price (float): Price at which the stock was bought.
+            quantity (int): Quantity of the stock bought.
+        """
         stock_data = self.get_stock_data(ticker, buy_date)
-        if not stock_data or stock_data.empty:
-            print(f"Stock data not found for {ticker}. Please try again.")
-            return
-
         self.portfolio[ticker] = {
             "buy_price": buy_price,
             "quantity": quantity,
             "stock_data": stock_data,
         }
 
-    def calculate_portfolio_performance(self):
+    def calculate_portfolio_performance(self) -> Dict[str, Any]:
+        """Calculate the performance of the portfolio.
+        Returns:
+            dict: Portfolio analysis.
+        """
         portfolio_analysis = {"portfolio": {}}
         total_investment = 0
         total_value = 0
@@ -59,16 +199,28 @@ class PortfolioManager:
             "Total Profit/Loss": total_value - total_investment,
         }
 
+        self.portfolio_performance = portfolio_analysis
         return portfolio_analysis
 
-    def calculate_simple_moving_average(self, prices, window_size):
+    def calculate_simple_moving_average(self, prices: List, window_size: int) -> float:
+        """Calculate the simple moving average of a stock. The window size is the number of days to consider.
+        Args:
+            prices (list): List of stock prices.
+            window_size (int): Number of days to consider for the moving average.
+        Returns:
+            float: The simple moving average."""
         sma = [
             sum(prices[i : i + window_size]) / window_size
             for i in range(len(prices) - window_size + 1)
         ]
         return sma[-1]
 
-    def generate_recommendation(self, portfolio_analysis):
+    def generate_recommendation(self, portfolio_analysis: Dict) -> Dict[str, str]:
+        """Generate recommendations for the stocks in the portfolio based on a decision rule.
+        Args:
+            portfolio_analysis (dict): Portfolio analysis data.
+        Returns:
+            dict: Recommendations for each stock in the portfolio."""
         recommendations = {}
         for stock, data in portfolio_analysis["portfolio"].items():
             # current_price = data["Current Price"]
@@ -76,9 +228,19 @@ class PortfolioManager:
             stock_data = data["stock_data"]
             recommendation = self.decision_rule_based_model(stock_data, buy_price)
             recommendations[stock] = recommendation
+
+        self.recommendations = recommendations
         return recommendations
 
-    def decision_rule_based_model(self, stock_data, buy_price):
+    def decision_rule_based_model(
+        self, stock_data: pd.DataFrame, buy_price: int
+    ) -> str:
+        """Simple decision rule based on moving averages.
+        Args:
+            stock_data (DataFrame): Stock data.
+            buy_price (float): Price at which the stock was bought.
+        Returns:
+            str: Recommendation to Buy, Sell, or Hold."""
         # Get recent close prices
         close_prices = stock_data["Close"].tolist()
         current_price = close_prices[-1]
@@ -100,7 +262,12 @@ class PortfolioManager:
         else:
             return "Hold"
 
-    def plot_stock_with_moving_averages(self, stock_data, ticker):
+    def plot_stock_with_moving_averages(self, stock_data: pd.DataFrame, ticker: str):
+        """Plot the stock prices with 10-day and 50-day simple moving averages.
+        Args:
+            stock_data (DataFrame): Stock data.
+            ticker (str): Stock ticker symbol."""
+
         # Calculate moving averages
         stock_data["10-day SMA"] = stock_data["Close"].rolling(window=10).mean()
         stock_data["50-day SMA"] = stock_data["Close"].rolling(window=50).mean()
@@ -118,3 +285,27 @@ class PortfolioManager:
         plt.legend()
         plt.grid(True)
         plt.show()
+
+
+def main():
+
+    data = "data.json"
+    manager = PortfolioManager(path=data)
+    portfolio_analysis = manager.calculate_portfolio_performance()
+
+    # Generate recommendations
+    recommendations = manager.generate_recommendation(portfolio_analysis)
+
+    manager.give_report()
+
+    # manager.plot_stock_with_moving_averages()
+
+    # Display portfolio analysis with recommendations
+    print("\nPortfolio Analysis with Recommendations:")
+    df = pd.DataFrame.from_dict(portfolio_analysis["portfolio"], orient="index")
+    df["Recommendation"] = [recommendations[stock] for stock in df.index]
+    print(df)
+
+
+if __name__ == "__main__":
+    main()
