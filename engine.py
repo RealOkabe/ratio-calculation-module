@@ -54,7 +54,7 @@ class Engine:
                                 "What module would you like to use:",
                                 "1. Ratio Calculator",
                                 "2. Portfolio Manager",
-                                "Enter 1 or 2 >> ",
+                                "Enter 1 or 2 or quit/exit >> ",
                             ]
                         )
                     )
@@ -83,23 +83,55 @@ class Engine:
         Run the ratio calculator module.
         The user can calculate the price-to-earnings ratio for a stock.
         """
-
         print("\nRatio Calculator")
-        print("Calculate the price-to-earnings ratio for a stock.")
+        print("This module can calculate a few metrics about any ticker.")
         print("Enter 'quit' to exit the module.")
         try:
             ticker = self.input("Enter the ticker: ")
 
             start = self.input("Enter the start date (yyyy-mm-dd): ", type="date")
 
-            end = self.input(
-                "Enter the end date (yyyy-mm-dd): ", optional=True, type="date"
-            )
+            end = self.input("Enter the end date (yyyy-mm-dd): ", optional=True, type="date")
             if not end:
                 end = str(datetime.now().date())
 
             ratio_calculator = RatioCalculator(ticker, start, end)
-            print(f"Price-to-earnings ratio: {ratio_calculator.calculate_pe_ratio()}")
+            while True:
+                ratio_to_calculate = self.input(
+                        "\n".join(
+                            [
+                                "What metric would you like to calculate:",
+                                "1. Price to Earnings Ratio",
+                                "2. Price Change Percentage",
+                                "3. Volume Weighted Average Price ",
+                                "4. Relative Strength Index",
+                                "5. Average True Range",
+                                "6. Calculate Everything\n"
+                            ]
+                        )
+                    , type = "int")
+                return_value = None
+                match ratio_to_calculate:
+                    case 1:
+                        return_value = ratio_calculator.calculate_pe_ratio()
+                    case 2:
+                        return_value = ratio_calculator.calculate_pc_percent()
+                    case 3:
+                        return_value = ratio_calculator.calculate_vwap()
+                    case 4:
+                        return_value = ratio_calculator.calculate_rsi()
+                    case 5:
+                        return_value = ratio_calculator.calculate_atr()
+                    case 6:
+                        return_value = ratio_calculator.calculate_all()
+                    case _:
+                        print("Please enter a valid value or enter quit/exit\n")
+                if return_value is not None:
+                    print(return_value)
+                to_continue = self.input("Would you like to calculate another metric? Enter 'yes' to continue or 'no' to exit.\n")
+                if to_continue == 'yes':
+                    continue
+                break
         except TickerDataError as e:
             print(f"Error occurred: {e}")
         except EOFError:
