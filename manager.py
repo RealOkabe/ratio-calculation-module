@@ -292,12 +292,18 @@ class PortfolioManager:
             return "Hold"
 
         if short_sma > long_sma and current_price > buy_price:
+            # Buy is risky - buying more at a price significantly higher than your initial buy price
+            # could increase your risk if the market adjusts or if the stock is currently overvalued
+            return "Hold/Buy"
+        elif short_sma > long_sma and current_price < buy_price:
+            # Upward trend, and current price is less than when we bought, Consider buying more
             return "Buy"
-        # Shorter term, the price looks like not going up
-        # And the price at when it was bought is higer than the current price
-        # WE SELL.
-        elif short_sma < long_sma and current_price < buy_price:
+        elif short_sma < long_sma and current_price > buy_price:
+            # Downward trend, and price is more than when we bought, Consider selling
             return "Sell"
+        elif short_sma < long_sma and current_price < buy_price:
+            # Downward trend, and price is less than when we bought, Consider holding/selling
+            return "Hold/Sell"
         else:
             return "Hold"
 

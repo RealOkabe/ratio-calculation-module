@@ -2,7 +2,7 @@
     "portfolio": {
         "AAPL": {
             "buy_date": "2020-01-01",
-            "buy_price": 1600,
+            "buy_price": 20,
             "quantity": 10
         },
         "GOOGL": {
@@ -13,6 +13,11 @@
         "AMZN": {
             "buy_date": "2020-01-01",
             "buy_price": 20600,
+            "quantity": 10
+        },
+        "SHOP": {
+            "buy_date": "2020-01-01",
+            "buy_price": 500,
             "quantity": 10
         }
     }
